@@ -1,0 +1,32 @@
+﻿source_format,input_field,unified_field,mapping_rule,unit_conversion,null_strategy,evidence,verified
+OpenSky,target_id,track_id,统一转为六位小写十六进制字符串，保留前导0,,必需,source_field_definitions.md: track_id,yes
+OpenSky,latest_time,timestamp,直接映射Unix秒，必须为正整数,,必需,source_field_definitions.md: timestamp,yes
+OpenSky,time_source,quality.time_source,position_time或last_contact_fallback直接映射,,默认position_time,source_field_definitions.md: quality.time_source,yes（候选缺失，依据权威定义补全）
+OpenSky,callsign,identity.callsign,直接映射,,空则null,source_field_definitions.md: identity.callsign,yes（候选缺失，依据权威定义补全）
+OpenSky,lat,position.lat,直接映射（度）,无,空则null,source_field_definitions.md: position.lat,yes（候选缺失，依据权威定义补全）
+OpenSky,lon,position.lon,直接映射（度）,无,空则null,source_field_definitions.md: position.lon,yes（候选缺失，依据权威定义补全）
+OpenSky,altitude,position.alt,直接映射（米）,无,空则null,source_field_definitions.md: position.alt,yes（候选缺失，依据权威定义补全）
+OpenSky,alt_type,position.alt_type,barometric/geometric/unknown直接映射,,空则unknown,source_field_definitions.md: position.alt_type,yes（候选缺失，依据权威定义补全）
+OpenSky,speed,motion.speed,直接映射（米/秒）,无,空则null,source_field_definitions.md: motion.speed,yes（候选缺失，依据权威定义补全）
+OpenSky,heading,motion.heading,直接映射（度）,无,空则null,source_field_definitions.md: motion.heading,yes（候选缺失，依据权威定义补全）
+OpenSky,vertical_rate,motion.vertical_rate,直接映射（米/秒）,无,空则null,source_field_definitions.md: motion.vertical_rate,yes（候选缺失，依据权威定义补全）
+OpenSky,on_ground,status.on_ground,转换为布尔值,,必需,source_field_definitions.md: status.on_ground,yes（候选缺失，依据权威定义补全）
+OpenSky,lat/lon,quality.position_valid,经纬度非空且处于合法范围,,默认false,source_field_definitions.md: quality.position_valid,yes（候选缺失，依据权威定义补全）
+OpenSky,latest_time,quality.time_valid,timestamp为正整数,,默认false,source_field_definitions.md: quality.time_valid,yes
+OpenSky,message_valid,quality.message_valid,源记录结构校验结果直接映射,,默认false,source_field_definitions.md: quality.message_valid,yes（候选缺失，依据权威定义补全）
+TeachingLink,target_id,track_id,统一转为六位小写十六进制字符串，保留前导0,,必需,source_field_definitions.md: track_id,yes（候选缺失，依据权威定义补全）
+TeachingLink,latest_time,timestamp,直接映射Unix秒，必须为正整数,,必需,source_field_definitions.md: timestamp,yes（候选缺失，依据权威定义补全）
+TeachingLink,status_flags.bit2,quality.time_source,bit2=1时为last_contact_fallback，否则position_time（修正：候选错映射为time_valid）,,默认position_time,teaching_message_spec.md: status_flags,yes
+TeachingLink,callsign+validity_flags.bit6,identity.callsign,有效时去除补0直接映射（修正：候选漏有效性位）,,无效时null,partner_field_dictionary.csv: callsign,yes（候选缺失，依据权威定义补全）
+TeachingLink,latitude_code+validity_flags.bit0,position.lat,有效时code/(2²²−1)×180−90（修正：候选误写为position.lon）,22位定点，180°满量程,无效时null,teaching_message_spec.md: 定点编码,yes
+TeachingLink,longitude_code+validity_flags.bit1,position.lon,有效时code/(2²²−1)×360−180（修正：候选误写为position.lat）,22位定点，360°满量程,无效时null,teaching_message_spec.md: 定点编码,yes
+TeachingLink,altitude_code+validity_flags.bit2,position.alt,有效时code−1000（修正：候选漏物理偏置）,1米分辨率，偏置−1000米,无效时null,teaching_message_spec.md: 定点编码,yes
+TeachingLink,status_flags.bit1,position.alt_type,高度有效时1=geometric、0=barometric；无效时unknown,,高度无效时unknown,teaching_message_spec.md: status_flags,yes（候选缺失，依据权威定义补全）
+TeachingLink,speed_code+validity_flags.bit3,motion.speed,有效时code×0.1,0.1米/秒分辨率,无效时null,teaching_message_spec.md: 定点编码,yes（候选缺失，依据权威定义补全）
+TeachingLink,heading_code+validity_flags.bit4,motion.heading,有效时code×0.01且小于360°,0.01°分辨率,无效时null,teaching_message_spec.md: 定点编码,yes（候选缺失，依据权威定义补全）
+TeachingLink,vertical_rate_code+validity_flags.bit5,motion.vertical_rate,有效时code×0.01−327.68,0.01米/秒分辨率，偏置327.68,无效时null,teaching_message_spec.md: 定点编码,yes（候选缺失，依据权威定义补全）
+TeachingLink,status_flags.bit0,status.on_ground,转换为布尔值,,必需,teaching_message_spec.md: status_flags,yes（候选缺失，依据权威定义补全）
+TeachingLink,纬经有效位+解码范围,quality.position_valid,纬度与经度有效位均为1且解码值处于合法范围,,默认false,source_field_definitions.md: quality.position_valid,yes（候选缺失，依据权威定义补全）
+TeachingLink,timestamp及帧接收结果,quality.time_valid,timestamp为正整数且message_valid=true；时间回退不等于时间无效,,默认false,source_field_definitions.md: quality.time_valid,yes（候选缺失，依据权威定义补全）
+TeachingLink,message_valid,quality.message_valid,完整帧接收判据直接映射，不得扩大为来源可信,,默认false,partner_field_dictionary.csv: message_valid,yes
+TeachingLink,callsign,identity.callsign,去除补0后直接映射,,,候选与权威定义不符，未采纳,no
