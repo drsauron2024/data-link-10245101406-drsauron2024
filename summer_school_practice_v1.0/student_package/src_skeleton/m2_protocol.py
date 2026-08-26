@@ -294,7 +294,7 @@ def main() -> int:
             log_rows.append(log_row(record_no, vector[0] if isinstance(vector[0],str) else "", "parse", e))
             continue
         try:
-            frame=encode_position_message(rec,len(frames))
+            frame=encode_position_message(rec,len(frames)+1)   # 序号从1起，与课程参考实现一致
         except ValidationError as e:
             log_rows.append(log_row(record_no, rec["target_id"], "encode", e))
             continue
