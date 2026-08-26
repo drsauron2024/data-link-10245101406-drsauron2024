@@ -154,9 +154,7 @@ def plot_tracks(records: list[dict[str, Any]], out_path, annotate: bool = True) 
     plt.close(fig)
 
 
-def main() -> int:
-    # 切换真实数据：把这行改成 DATA_ROOT/"opensky_real"/"opensky_real_messages.bin"
-    data_path=m2_protocol.DATA_ROOT/"partner_messages_multitime.bin"
+def run(data_path) -> int:
     m2_protocol.OUTPUT_ROOT.mkdir(parents=True,exist_ok=True)
     log_path=m2_protocol.OUTPUT_ROOT/"validation_log.csv"
     log_rows=[]
@@ -184,6 +182,10 @@ def main() -> int:
         print(f"SQLite查询: {row['target_id']} 记录数={row['record_count']} 最新时间={row['latest_time']}")
     print(f"{data_path.name}: 解码 {len(records)} 条 | 航迹 {len(tracks)} | 态势目标 {len(situations)} | 流级错误 {len(errors)}")
     return 0
+
+
+def main() -> int:
+    return run(m2_protocol.DATA_ROOT/"partner_messages_multitime.bin")
 
 
 if __name__=="__main__":

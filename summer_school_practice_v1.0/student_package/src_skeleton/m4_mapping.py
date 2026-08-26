@@ -207,11 +207,10 @@ def read_csv_rows(path) -> list[dict[str, Any]]:
         return list(csv.DictReader(f))
 
 
-def main() -> int:
+def run(opensky_situation_path, partner_situation_path) -> int:
     m2_protocol.OUTPUT_ROOT.mkdir(parents=True,exist_ok=True)
-    # ---- 输入：OpenSky 态势（本人M3输出）+ TeachingLink 态势（伙伴方） ----
-    opensky_rows=read_csv_rows(m2_protocol.OUTPUT_ROOT/"current_situation.csv")
-    partner_rows=read_csv_rows(m2_protocol.DATA_ROOT/"m4"/"partner_current_situation.csv")
+    opensky_rows=read_csv_rows(opensky_situation_path)
+    partner_rows=read_csv_rows(partner_situation_path)
     # ---- 候选与核验 ----
     candidate_rows=read_csv_rows(m2_protocol.STUDENT_PACKAGE_ROOT/"reference"/"pre_generated_mapping_candidate.csv")
     verified_rows=verify_candidate_mapping(candidate_rows)
@@ -238,9 +237,14 @@ def main() -> int:
             a,b=by_track[tid],other
             print(f"对比 {tid}: {a['source']} lat={_fmt(a['position']['lat'])} lon={_fmt(a['position']['lon'])} | "
                   f"{b['source']} lat={_fmt(b['position']['lat'])} lon={_fmt(b['position']['lon'])}")
-    print(f"统一消息: {len(unified_rows)} 条 (OpenSky {len(opensky_rows)} + TeachingLink {len(partner_rows)}) | "
-          f"正式映射 {len(verified_rows)} 条 | 候选 {len(candidate_rows)} 条")
+    '''print(f"统一消息: {len(unified_rows)} 条 (OpenSky {len(opensky_rows)} + TeachingLink {len(partner_rows)}) | "
+          f"正式映射 {len(verified_rows)} 条 | 候选 {len(candidate_rows)} 条")'''
     return 0
+
+
+def main() -> int:
+    return run(m2_protocol.OUTPUT_ROOT/"current_situation.csv",
+               m2_protocol.DATA_ROOT/"m4"/"partner_current_situation.csv")
 
 
 if __name__=="__main__":

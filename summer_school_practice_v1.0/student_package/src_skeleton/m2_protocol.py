@@ -87,13 +87,11 @@ def parse_state_vector(vector: list[Any]) -> dict[str, Any]:
         "vertical_rate":vertical_rate,
         "on_ground":on_ground,
     }
-    raise NotImplementedError("M2：按字段字典实现索引、必需/可空字段、来源回退和量程检查。")
 
 
 def calculate_checksum(data_without_checksum: bytes) -> int:
     """计算前39字节无符号字节值之和模65536。"""
     return sum(data_without_checksum)%65536
-    raise NotImplementedError("M2：实现教学校验和。")
 
 
 def encode_position_message(record: dict[str, Any], message_seq: int) -> bytes:
@@ -160,7 +158,6 @@ def encode_position_message(record: dict[str, Any], message_seq: int) -> bytes:
     frame+=struct.pack(">HHHHBB",altitude,speed,heading,vertical_rate,status_flag,validity_flags)
     frame+=struct.pack(">H",calculate_checksum(frame))
     return frame
-    raise NotImplementedError("M2：实现定点量化、状态/有效性标志和大端字节封装。")
 
 
 def decode_position_message(data: bytes) -> dict[str, Any]:
@@ -252,7 +249,6 @@ def decode_position_message(data: bytes) -> dict[str, Any]:
         "validation_errors":"",
         "source":"teaching_link",
     }
-    raise NotImplementedError("M2：实现长度、头字段、校验和、保留位、标志一致性和字段恢复。")
 
 
 DECODED_CSV_FIELDS=["target_id","callsign","timestamp","timestamp_source","time_source","message_seq",
@@ -279,8 +275,17 @@ def log_row(record_no, target_id, stage, e):
             "description":str(e)}
 
 
-def main() -> int:
-    raw=json.loads((DATA_ROOT/"raw_states.json").read_text(encoding="utf-8"))
+def _read_vectors(path) -> list:
+    if path.is_dir():
+        vectors=[]
+        for p in sorted(path.glob("*.json")):
+            vectors.extend(json.loads(p.read_text(encoding="utf-8"))["states"])
+        return vectors
+    return json.loads(path.read_text(encoding="utf-8"))["states"]
+
+
+def run_pipeline(vectors_path) -> int:
+    raw={"states":_read_vectors(vectors_path)}
     OUTPUT_ROOT.mkdir(parents=True,exist_ok=True)
     frames=[]
     source_records=[]
@@ -344,6 +349,10 @@ def main() -> int:
     write_csv(OUTPUT_ROOT/"roundtrip_report.csv",RT_CSV_FIELDS,rt_rows)
     write_csv(OUTPUT_ROOT/"validation_log.csv",LOG_CSV_FIELDS,log_rows)
     return 0
+
+
+def main() -> int:
+    return run_pipeline(DATA_ROOT/"raw_states.json")
 
 
 if __name__=="__main__":

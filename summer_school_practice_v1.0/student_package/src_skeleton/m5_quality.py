@@ -104,10 +104,7 @@ def build_quality_situation(records: list[dict[str, Any]], alerts: list[dict[str
     return rows
 
 
-def main() -> int:
-    # 输入路径写死（anomaly_cases.csv 为 M5 固定输入）
-    cases_path=m2_protocol.DATA_ROOT/"m5"/"anomaly_cases.csv"
-    rules_path=m2_protocol.DATA_ROOT/"m5"/"anomaly_rules.csv"
+def run(cases_path, rules_path) -> int:
     m2_protocol.OUTPUT_ROOT.mkdir(parents=True,exist_ok=True)
     with open(rules_path,"r",encoding="utf-8-sig",newline="") as f:
         rules=list(csv.DictReader(f))
@@ -129,6 +126,11 @@ def main() -> int:
           " ".join(f"{k}={v}" for k,v in sorted(by_type.items()))+
           f" | HIGH={by_sev.get('HIGH',0)} MEDIUM={by_sev.get('MEDIUM',0)}")
     return 0
+
+
+def main() -> int:
+    return run(m2_protocol.DATA_ROOT/"m5"/"anomaly_cases.csv",
+               m2_protocol.DATA_ROOT/"m5"/"anomaly_rules.csv")
 
 
 if __name__=="__main__":
