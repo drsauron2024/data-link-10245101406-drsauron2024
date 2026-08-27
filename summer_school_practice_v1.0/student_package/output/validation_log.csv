@@ -1,3 +1,1 @@
 ﻿record_no,target_id,stage,field,problem_type,value,description
-4,780bad,parse,timestamp,REQUIRED_FIELD_MISSING,,time_position与last_contact均为空，无法生成正常帧
-5,780bee,parse,heading,OUT_OF_RANGE,360.0,heading超出量程

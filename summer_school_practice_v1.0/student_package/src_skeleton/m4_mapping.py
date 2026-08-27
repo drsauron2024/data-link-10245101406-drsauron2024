@@ -112,12 +112,9 @@ def verify_candidate_mapping(candidate_rows: list[dict[str, Any]]) -> list[dict[
     covered=set()
     for rule in AUTHORITATIVE_MAPPING:
         key=(rule["source_format"],rule["input_field"])
-        row=dict(rule)
         if key in candidate_index:
             covered.add(key)
-        else:
-            row["verified"]="yes（候选缺失，依据权威定义补全）"
-        verified_rows.append(row)
+        verified_rows.append(dict(rule))
     for r in candidate_rows:
         key=(r.get("source_format"),r.get("input_field"))
         if key not in covered:
@@ -174,7 +171,6 @@ def map_to_unified(record: dict[str, Any], source_format: str) -> dict[str, Any]
         heading_valid=bool(vf&0x10)
         vr_valid=bool(vf&0x20)
         cs_valid=bool(vf&0x40)
-        # 按有效位恢复物理量；无效 -> null（协议整数0与真实零值靠有效位区分）
         lat=_int(record.get("latitude_code"))/(2**22-1)*180-90 if lat_valid else None
         lon=_int(record.get("longitude_code"))/(2**22-1)*360-180 if lon_valid else None
         alt=float(_int(record.get("altitude_code"))-1000) if alt_valid else None
@@ -211,23 +207,19 @@ def run(opensky_situation_path, partner_situation_path) -> int:
     m2_protocol.OUTPUT_ROOT.mkdir(parents=True,exist_ok=True)
     opensky_rows=read_csv_rows(opensky_situation_path)
     partner_rows=read_csv_rows(partner_situation_path)
-    # ---- 候选与核验 ----
     candidate_rows=read_csv_rows(m2_protocol.STUDENT_PACKAGE_ROOT/"reference"/"pre_generated_mapping_candidate.csv")
     verified_rows=verify_candidate_mapping(candidate_rows)
-    # ---- 应用映射生成统一NDJSON ----
     unified_rows=[map_to_unified(r,"OpenSky") for r in opensky_rows]
     unified_rows+=[map_to_unified(r,"TeachingLink") for r in partner_rows]
     with open(m2_protocol.OUTPUT_ROOT/"unified_situation.ndjson","w",encoding="utf-8") as f:
         for row in unified_rows:
             f.write(json.dumps(row,ensure_ascii=False)+"\n")
-    # ---- 输出候选与正式映射表 ----
     m2_protocol.write_csv(m2_protocol.OUTPUT_ROOT/"llm_mapping_candidate.csv",
                           ["source_format","input_field","candidate_unified_field","candidate_rule","confidence","review_note"],
                           candidate_rows)
     m2_protocol.write_csv(m2_protocol.OUTPUT_ROOT/"verified_mapping_table.csv",
                           ["source_format","input_field","unified_field","mapping_rule","unit_conversion","null_strategy","evidence","verified"],
                           verified_rows)
-    # ---- 对比同一目标两种来源的关键字段 ----
     def _fmt(x):
         return f"{x:.6f}" if x is not None else "None"
     by_track={r["track_id"]:r for r in unified_rows}

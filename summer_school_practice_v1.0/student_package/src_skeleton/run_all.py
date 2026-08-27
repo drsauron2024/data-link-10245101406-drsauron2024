@@ -14,16 +14,16 @@ OUTPUT_ROOT = STUDENT_PACKAGE_ROOT / "output"
 DATA_ROOT = STUDENT_PACKAGE_ROOT / "data"
 
 
-# 输入配置：切换数据只改这里
-M2_VECTORS_SOURCE = DATA_ROOT / "raw_states.json"
-M3_STREAM_SOURCE = DATA_ROOT / "partner_messages_multitime.bin"
-# 真实OpenSky数据（验证用，两行一起切换）：
-# M2_VECTORS_SOURCE = DATA_ROOT / "opensky_real" / "source"
-# M3_STREAM_SOURCE = DATA_ROOT / "opensky_real" / "opensky_real_messages.bin"
+#M2_VECTORS_SOURCE = DATA_ROOT / "raw_states.json"
+#M3_STREAM_SOURCE = DATA_ROOT / "partner_messages_multitime.bin"
+M2_VECTORS_SOURCE = DATA_ROOT / "opensky_real" / "source"
+M3_STREAM_SOURCE = DATA_ROOT / "opensky_real" / "opensky_real_messages.bin"
 M4_OPENSKY_SITUATION = OUTPUT_ROOT / "current_situation.csv"
 M4_PARTNER_SITUATION = DATA_ROOT / "m4" / "partner_current_situation.csv"
 M5_CASES_SOURCE = DATA_ROOT / "m5" / "anomaly_cases.csv"
 M5_RULES_SOURCE = DATA_ROOT / "m5" / "anomaly_rules.csv"
+
+FRAME_SIZE = 41
 
 
 def prepare_output_directory() -> None:
@@ -58,7 +58,7 @@ def check_quality() -> None:
 
 
 def export_results() -> None:
-    n_frames=len((OUTPUT_ROOT/"encoded_messages.bin").read_bytes())//41
+    n_frames=len((OUTPUT_ROOT/"encoded_messages.bin").read_bytes())//FRAME_SIZE
     with open(OUTPUT_ROOT/"unified_situation.ndjson",encoding="utf-8") as f:
         n_unified=sum(1 for _ in f)
     with open(OUTPUT_ROOT/"alert_log.csv",encoding="utf-8-sig",newline="") as f:
