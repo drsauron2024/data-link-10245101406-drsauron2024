@@ -2,7 +2,7 @@
 
 ## 基本信息
 
-- 姓名：（填写）
+- 姓名：莫景羽
 - 学号：10245101406
 - GitHub用户名：drsauron2024
 - Python版本：3.14.7
@@ -42,7 +42,7 @@
 - 航迹与态势：`decoded_multitime.csv`、`track_table.csv`、`current_situation.csv`、`states.db`、`states_db_query.csv`、`partner_messages_multitime_tracks.png`
 - 映射：`llm_mapping_candidate.csv`、`verified_mapping_table.csv`、`unified_situation.ndjson`
 - 质量：`alert_log.csv`、`quality_situation.csv`
-- 说明：`docs/M1_interface_risk.md`、`docs/M4_mapping_review.md`、`docs/M5_result_note.md`
+- 说明：`docs/M1_system_flow.md`、`docs/M1_interface_risk.md`、`docs/M4_mapping_review.md`、`docs/M5_result_note.md`、`docs/M6_presentation.pdf`
 
 ## 实验结果
 
@@ -56,11 +56,9 @@
 
 - 教学协议 TeachingLink 仅用于课程教学，不对应真实装备协议；message_valid 不代表来源真实性；
 - 帧边界假定已对齐，不做失步重同步；传输无重传与协议状态机（课程边界约定）；
-- M1 系统处理流程图（PDF/PNG）尚未生成；
-- 真实数据验证通过切换模块 main 中的输入路径进行，不产出交付文件。
 
 ## 最终提交信息
 
-- 仓库链接：（填写）
+- 仓库链接：https://github.com/drsauron2024/data-link-10245101406-drsauron2024/tree/main
 - 最终commit ID：（填写）
-- 最后检查日期：（填写）
+- 最后检查日期：2026/08/27
